@@ -1,0 +1,99 @@
+# GitHub Copilot Configuration for IV&V Space Systems Framework
+
+# Project Context
+name: "IV&V Space Systems Framework"
+description: "Mission-critical Independent Verification and Validation toolkit for space systems software"
+domain: "aerospace-software-engineering"
+
+# Programming Languages and Frameworks
+languages:
+  primary:
+    - python
+    - cpp
+    - java
+  secondary:
+    - javascript
+    - typescript
+    - sql
+  
+frameworks:
+  - pytest
+  - googletest
+  - dash
+  - plotly
+  - docker
+  - cmake
+
+# Standards and Compliance
+standards:
+  - "NASA-STD-8719.13C"
+  - "DO-178C"
+  - "ECSS-E-ST-40C"
+  - "ISO-26262"
+  - "MISRA-C++"
+
+# Domain-Specific Keywords
+aerospace_keywords:
+  - "fault injection"
+  - "requirements traceability"
+  - "IV&V"
+  - "RTOS emulation"
+  - "mission critical"
+  - "static analysis"
+  - "dynamic analysis"
+  - "spaceflight software"
+  - "ground support equipment"
+  - "flight software"
+  - "telemetry"
+  - "spacecraft"
+  - "satellite"
+  - "rover"
+  - "lander"
+
+# Mission Types
+mission_contexts:
+  - "mars exploration"
+  - "lunar missions"
+  - "deep space"
+  - "earth observation"
+  - "satellite constellations"
+  - "space station operations"
+  - "planetary defense"
+
+# Technical Areas
+technical_domains:
+  - "propulsion systems"
+  - "attitude determination and control"
+  - "guidance navigation and control"
+  - "power and thermal management"
+  - "communication and data handling"
+  - "entry descent and landing"
+  - "autonomous operations"
+
+# Code Quality Preferences
+code_style:
+  python:
+    formatter: "black"
+    linter: "pylint"
+    type_checker: "mypy"
+    line_length: 88
+  cpp:
+    standard: "C++17"
+    formatter: "clang-format"
+    linter: "clang-tidy"
+    static_analyzer: "cppcheck"
+
+# Testing Preferences
+testing:
+  unit_tests: true
+  integration_tests: true
+  performance_tests: true
+  security_tests: true
+  coverage_threshold: 90
+
+# Documentation Style
+documentation:
+  style: "google"
+  include_examples: true
+  include_type_hints: true
+  api_docs: true

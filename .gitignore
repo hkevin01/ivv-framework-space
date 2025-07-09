@@ -1,0 +1,268 @@
+# 🛰️ IV&V Space Systems - .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.virtualenv/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# C/C++
+*.o
+*.obj
+*.elf
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# C++ specific
+*.gch
+*.pch
+*.lib
+*.a
+*.la
+*.lo
+*.dll
+*.dylib
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Java
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+
+# IDE/Editor files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/.ropeproject
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Mission-specific data (sensitive)
+mission_data/
+telemetry_logs/
+classified_scenarios/
+flight_software_binaries/
+
+# Simulation outputs
+simulation_results/
+fault_injection_logs/
+performance_profiles/
+memory_dumps/
+
+# Static analysis reports
+static_analysis_reports/
+sonar_reports/
+bandit_reports/
+frama_c_output/
+
+# Generated documentation
+docs/_build/
+docs/site/
+mkdocs_build/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# Large data files (use Git LFS if needed)
+*.dat
+*.bin
+*.raw
+*.pcap
+large_datasets/
+
+# Configuration files with secrets
+config/secrets.yml
+config/production.ini
+config/api_keys.json
+
+# Build artifacts
+target/
+out/
+artifacts/
+
+# Package manager files
+node_modules/
+.npm
+.yarn-integrity
+yarn.lock
+package-lock.json
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Aerospace-specific files
+*.tlm
+*.cmd
+flight_rules/
+ground_procedures/
+mission_sequences/
+
+# RTEMS/QNX specific
+*.o.real
+*.executable
+*.map
+*.sym
+
+# Debugging and profiling
+*.prof
+*.trace
+valgrind_output/
+gprof_output/
+perf_data/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Certificates and keys (should never be in repo)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Machine learning models (use Git LFS)
+models/
+*.onnx
+*.pkl
+*.joblib
+*.h5
+*.pb
+
+# Backup files
+*~
+*.orig
+*.rej
+.*.swp
+.*.swo
+
+# Local development overrides
+docker-compose.override.yml
+local_config.yml
+development.ini

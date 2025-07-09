@@ -1,0 +1,383 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: '3.9'
+  NODE_VERSION: '18'
+
+jobs:
+  # Static Analysis and Code Quality
+  static-analysis:
+    runs-on: ubuntu-latest
+    name: Static Analysis
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for better analysis
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety mypy pylint black isort
+        pip install -r requirements.txt
+    
+    - name: Code formatting check (Black)
+      run: black --check --diff src/ tests/
+    
+    - name: Import sorting check (isort)
+      run: isort --check-only --diff src/ tests/
+    
+    - name: Type checking (MyPy)
+      run: mypy src/
+    
+    - name: Linting (Pylint)
+      run: pylint src/
+    
+    - name: Security analysis (Bandit)
+      run: bandit -r src/ -f json -o bandit-report.json
+    
+    - name: Dependency vulnerability check (Safety)
+      run: safety check --json --output safety-report.json
+    
+    - name: Upload static analysis artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: static-analysis-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  # Python Tests
+  test-python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    name: Python Tests (Python ${{ matrix.python-version }})
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-xdist
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Run Python tests with coverage
+      run: |
+        pytest tests/ \
+          --cov=src/ \
+          --cov-report=xml \
+          --cov-report=html \
+          --cov-report=term \
+          --junitxml=pytest-results.xml \
+          -n auto
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: python
+        name: codecov-python-${{ matrix.python-version }}
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-python-${{ matrix.python-version }}
+        path: |
+          pytest-results.xml
+          htmlcov/
+
+  # C++ Tests
+  test-cpp:
+    runs-on: ubuntu-latest
+    name: C++ Tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install C++ dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libgtest-dev \
+          libgmock-dev \
+          valgrind \
+          clang-tidy \
+          cppcheck
+    
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS="-coverage"
+    
+    - name: Build C++ components
+      run: |
+        cd build
+        make -j$(nproc)
+    
+    - name: Run C++ tests
+      run: |
+        cd build
+        ctest --output-on-failure --verbose
+    
+    - name: Run static analysis (cppcheck)
+      run: |
+        cppcheck --enable=all --xml --xml-version=2 src/ 2> cppcheck-report.xml
+    
+    - name: Memory leak check (Valgrind)
+      run: |
+        cd build
+        valgrind --tool=memcheck --leak-check=full --xml=yes --xml-file=valgrind-report.xml ./tests/unit_tests
+    
+    - name: Upload C++ test artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: cpp-test-results
+        path: |
+          build/Testing/
+          cppcheck-report.xml
+          build/valgrind-report.xml
+
+  # Integration Tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    needs: [test-python, test-cpp]
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ivv_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Set up test database
+      run: |
+        export PGPASSWORD=postgres
+        psql -h localhost -U postgres -d ivv_test -c "CREATE EXTENSION IF NOT EXISTS uuid-ossp;"
+    
+    - name: Run integration tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ivv_test
+        TEST_ENV: ci
+      run: |
+        pytest tests/integration/ \
+          --integration \
+          --junitxml=integration-results.xml \
+          -v
+    
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: integration-test-results
+        path: integration-results.xml
+
+  # Docker Build and Test
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Docker Build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: false
+        tags: ivv-space-systems:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Test Docker image
+      run: |
+        docker run --rm ivv-space-systems:test python -c "import src; print('Import successful')"
+        docker run --rm ivv-space-systems:test python -m pytest tests/unit/ -x
+
+  # Security Scanning
+  security-scan:
+    runs-on: ubuntu-latest
+    name: Security Scan
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Documentation Build
+  docs-build:
+    runs-on: ubuntu-latest
+    name: Documentation Build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install documentation dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mkdocs mkdocs-material mkdocs-mermaid2-plugin
+        pip install -r requirements.txt
+    
+    - name: Build documentation
+      run: mkdocs build --strict
+    
+    - name: Upload documentation artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: site/
+
+  # Performance Benchmarks
+  performance-tests:
+    runs-on: ubuntu-latest
+    name: Performance Tests
+    needs: [test-python]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest-benchmark
+        pip install -r requirements.txt
+    
+    - name: Run performance benchmarks
+      run: |
+        pytest tests/performance/ \
+          --benchmark-only \
+          --benchmark-json=benchmark-results.json
+    
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v3
+      with:
+        name: benchmark-results
+        path: benchmark-results.json
+
+  # Release (only on main branch)
+  release:
+    runs-on: ubuntu-latest
+    name: Release
+    needs: [static-analysis, test-python, test-cpp, integration-tests, docker-build, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install release dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bump2version
+    
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+    
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        # Generate release notes from commit messages
+        echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+        git log --pretty=format:"- %s" $(git describe --tags --abbrev=0)..HEAD >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      if: contains(github.event.head_commit.message, '[release]')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: ${{ steps.release_notes.outputs.RELEASE_NOTES }}
+        draft: false
+        prerelease: false
