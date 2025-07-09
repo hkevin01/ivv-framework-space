@@ -193,10 +193,10 @@ if [ "$BUILD_DOCS" = true ]; then
 site_name: IV&V Space Systems Framework
 site_description: Mission-Critical IV&V Toolkit for Space Systems
 site_author: Space Systems Team
-site_url: https://your-username.github.io/ivv-space-systems
+site_url: https://hkevin01.github.io/ivv-framework-space
 
-repo_name: your-username/ivv-space-systems
-repo_url: https://github.com/your-username/ivv-space-systems
+repo_name: hkevin01/ivv-framework-space
+repo_url: https://github.com/hkevin01/ivv-framework-space
 
 theme:
   name: material
