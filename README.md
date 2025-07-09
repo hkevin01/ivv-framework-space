@@ -1,6 +1,6 @@
 # 🛰️ Mission-Critical IV&V Toolkit for Space Systems
 
-[![Build Status](https://github.com/your-username/ivv-space-systems/workflows/CI/badge.svg)](https://github.com/your-username/ivv-space-systems/actions)
+[![Build Status](https://github.com/hkevin01/ivv-framework-space/workflows/CI/badge.svg)](https://github.com/hkevin01/ivv-framework-space/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![NASA Standards](https://img.shields.io/badge/NASA-STD--8719.13C-red.svg)](https://standards.nasa.gov/)
@@ -44,8 +44,8 @@ Inspired by flight software standards from NASA, ESA, and commercial partners, t
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/ivv-space-systems.git
-cd ivv-space-systems
+git clone https://github.com/hkevin01/ivv-framework-space.git
+cd ivv-framework-space
 
 # Set up Python environment
 python -m venv venv
@@ -68,10 +68,10 @@ python -m src.dashboard.app
 
 ```bash
 # Build the Docker image
-docker build -t ivv-space-systems .
+docker build -t ivv-framework-space .
 
 # Run with example scenario
-docker run -it --rm ivv-space-systems \
+docker run -it --rm ivv-framework-space \
   python ivv_runner.py --scenario "orbital-insertion-test"
 ```
 
@@ -231,9 +231,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 - **Project Lead**: [Your Name](mailto:your.email@domain.com)
-- **Community Forum**: [GitHub Discussions](https://github.com/your-username/ivv-space-systems/discussions)
-- **Documentation**: [Project Wiki](https://github.com/your-username/ivv-space-systems/wiki)
-- **Issue Tracker**: [GitHub Issues](https://github.com/your-username/ivv-space-systems/issues)
+- **Community Forum**: [GitHub Discussions](https://github.com/hkevin01/ivv-framework-space/discussions)
+- **Documentation**: [Project Wiki](https://github.com/hkevin01/ivv-framework-space/wiki)
+- **Issue Tracker**: [GitHub Issues](https://github.com/hkevin01/ivv-framework-space/issues)
 
 ---
 
