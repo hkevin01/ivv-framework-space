@@ -15,7 +15,7 @@ languages:
     - javascript
     - typescript
     - sql
-  
+
 frameworks:
   - pytest
   - googletest
