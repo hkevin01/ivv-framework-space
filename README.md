@@ -22,14 +22,14 @@ Inspired by flight software standards from NASA, ESA, and commercial partners, t
 
 ## 🚀 Tech Stack
 
-| Layer | Stack Used |
+| <sub>Layer</sub> | <sub>Stack Used</sub> |
 |-------|------------|
-| **Language** | Python, C++, Java |
-| **Static Analysis** | LLVM, Frama-C, Bandit |
-| **Simulation** | Docker, QEMU, RTEMS/QNX-compatible emulators |
-| **Visualization** | Dash, Plotly, Streamlit |
-| **CI/CD** | GitHub Actions, PyTest, GoogleTest |
-| **AI/ML** | Hugging Face Transformers, ONNX Runtime, LangChain |
+| <sub>**Language**</sub> | <sub>Python, C++, Java</sub> |
+| <sub>**Static Analysis**</sub> | <sub>LLVM, Frama-C, Bandit</sub> |
+| <sub>**Simulation**</sub> | <sub>Docker, QEMU, RTEMS/QNX-compatible emulators</sub> |
+| <sub>**Visualization**</sub> | <sub>Dash, Plotly, Streamlit</sub> |
+| <sub>**CI/CD**</sub> | <sub>GitHub Actions, PyTest, GoogleTest</sub> |
+| <sub>**AI/ML**</sub> | <sub>Hugging Face Transformers, ONNX Runtime, LangChain</sub> |
 
 ## 🛠️ Getting Started
 
